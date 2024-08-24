@@ -47,7 +47,8 @@ def getMostReleventProducts():
         search_query = request.form.get('searchQuery')
         qrv=vsm.vectorize(search_query)
         res = rt.retrieve(qrv,vsm)
-        return jsonify({'releventProducts' :res.to_json()})
+        matches = df.loc[df['id'].isin(res['docno'])]
+        return jsonify({'releventProducts' :matches.to_json()})
     
 
 
