@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 @app.route('/api/getMostReleventProducts', methods=['POST'])
 def getMostReleventProducts():
-    response =  requests.get('http://127.0.0.1:8000/api/getProducts')
+    response =  requests.get('http://192.168.134.84:8000/api/getProducts')
     data =response.content.decode('utf-8')
     data_dict = json.loads(data)
     if response.status_code == 200:
@@ -42,13 +42,16 @@ def getMostReleventProducts():
                 ).sort_values(by=['score'], ascending=False)
                 return results[results["score"]>0]
         
-        rt = Retriever()
-        vsm = IndexModel(df)
-        search_query = request.form.get('searchQuery')
-        qrv=vsm.vectorize(search_query)
-        res = rt.retrieve(qrv,vsm)
-        matches = df.loc[df['id'].isin(res['docno'])]
-        return jsonify({'releventProducts' :matches.to_json()})
+    rt = Retriever()
+    vsm = IndexModel(df)
+    search_query = request.form.get('searchQuery')
+    qrv = vsm.vectorize(search_query)
+    res = rt.retrieve(qrv, vsm)
+    matches = df.loc[df['id'].isin(res['docno'])]
+
+# Return a proper JSON response using 'to_dict()'
+    return jsonify({'releventProducts': matches.to_dict(orient='records')})
+
     
 
 
